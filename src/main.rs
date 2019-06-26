@@ -1,20 +1,45 @@
-extern crate serde;
-extern crate serde_json;
+use juniper::{FieldResult};
 
-#[macro_use] 
-extern crate serde_derive;
-
-use std::fs::File;
-use std::io::Read;
-
-use structs::DB;
-mod structs;
-
-fn main() {
-   let mut file = File::open("db.json").unwrap();
-   let mut buff = String::new();
-   file.read_to_string(&mut buff).unwrap();
-
-   let db: DB = serde_json::from_str(&buff).unwrap();
-   println!("{}", db.brazil[0].city);
+#[derive(juniper::GraphQLEnum)]
+enum Episode {
+    NewHope,
+    Empire,
+    Jedi,
 }
+
+struct Context {
+    // pool: DatabasePool,
+}
+
+impl juniper::Context for Context {}
+
+struct Query;
+
+#[juniper::object(
+    Context = Context,
+)]
+
+impl Query {
+
+    fn apiVersion() -> &str {
+        "1.0"
+    }
+
+    fn human(context: &Context, id: String) -> FieldResult<Human> {
+        let connection = context.pool.get_connection()?;
+        let human = connection.find_human(&id)?;
+        Ok(human)
+    }
+}
+
+// Now, we do the same for our Mutation type.
+
+struct Mutation;
+
+#[juniper::object(
+    Context = Context,
+)]
+
+impl Mutation {}
+
+type Schema = juniper::RootNode<'static, Query, Mutation>;
