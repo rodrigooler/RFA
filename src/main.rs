@@ -1,45 +1,22 @@
-use juniper::{FieldResult};
+#![feature(proc_macro_hygiene, decl_macro)]
 
-#[derive(juniper::GraphQLEnum)]
-enum Episode {
-    NewHope,
-    Empire,
-    Jedi,
+#[macro_use] extern crate rocket;
+
+use rocket_contrib::json::Json;
+
+use db;
+mod db;
+
+#[get("/code/<id>")]
+fn hello(id: u128) -> Json<Brazil> {
+    let db: Database
 }
 
-struct Context {
-    // pool: DatabasePool,
+// #[get("/code/<id>")]
+// fn hello(id: u128) -> Json<Brazil> {
+//     format!("Hello, {} year old named {}!", age, name)
+// }
+
+fn main() {
+    rocket::ignite().mount("/", routes![hello]).launch();
 }
-
-impl juniper::Context for Context {}
-
-struct Query;
-
-#[juniper::object(
-    Context = Context,
-)]
-
-impl Query {
-
-    fn apiVersion() -> &str {
-        "1.0"
-    }
-
-    fn human(context: &Context, id: String) -> FieldResult<Human> {
-        let connection = context.pool.get_connection()?;
-        let human = connection.find_human(&id)?;
-        Ok(human)
-    }
-}
-
-// Now, we do the same for our Mutation type.
-
-struct Mutation;
-
-#[juniper::object(
-    Context = Context,
-)]
-
-impl Mutation {}
-
-type Schema = juniper::RootNode<'static, Query, Mutation>;

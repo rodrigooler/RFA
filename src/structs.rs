@@ -1,5 +1,3 @@
-#[derive(juniper::GraphQLObject)]
-#[graphql(description="A humanoid creature in the Star Wars universe")]
 #[derive(Serialize, Deserialize)]
 pub struct Brazil {
     pub id: String,
@@ -12,6 +10,6 @@ pub struct Brazil {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct DB {
+pub struct Database {
     pub brazil: Vec<Brazil>
 }
